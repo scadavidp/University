@@ -1,0 +1,152 @@
+<html>
+	<head>
+	
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	
+	</head>
+
+	<body>
+
+		<div class="container">
+	
+		<br>
+
+		<form action="/registroCliente", method="POST">
+  	
+		<div class="form-row">
+			
+			<div class="form-group col-md-2">
+
+				<label for="selectTipoDocumento">Tipo de documento</label>
+      				<select id="selectTipoDocumento" name="selectTipoDocumento" class="form-control">
+					<option selected>C.C</option>
+					<option>T.I</option>
+				</select>
+
+			</div>
+				
+			<div class="form-group col-md-5">
+      
+				<label for="txtNumeroDocumento">Número de documento</label>
+				<input type="text" class="form-control" name="txtNumeroDocumento" placeholder="Número de documento" required>
+    
+			</div>
+
+		</div>
+
+		<div class="form-row">
+    
+			<div class="form-group col-md-6">
+      
+				<label for="txtNombres">Nombres</label>
+				<input type="text" class="form-control" name="txtNombres" placeholder="Nombres" required>
+    
+			</div>
+    
+			<div class="form-group col-md-6">
+      
+				<label for="txtApellidos">Apellidos</label>
+      				<input type="text" class="form-control" name="txtApellidos" placeholder="Apellidos" required>
+    
+			</div>
+  
+		</div>
+  
+		<div class="form-group">
+    
+			<label for="txtCiudad">Ciudad</label>
+    			<input type="text" class="form-control" name="txtCiudad" placeholder="Ciudad">
+  
+		</div>
+		
+		<div class="form-group">
+    
+			<label for="txtDireccion">Dirección</label>
+    			<input type="text" class="form-control" name="txtDireccion" placeholder="Dirección">
+  
+		</div>
+ 
+		<label>Sexo</label> <br>
+		
+		<div class="form-check form-check-inline">
+  
+			<input class="form-check-input" type="radio" name="radioSexo" id="maculino" value="Masculino">
+  			<label class="form-check-label" for="masculino">Masculino</label>
+
+		</div>
+
+		<div class="form-check form-check-inline">
+  
+			<input class="form-check-input" type="radio" name="radioSexo" id="femenino" value="Femenino">
+  			<label class="form-check-label" for="femenino">Femenino</label>
+		</div>
+
+		<div class="form-check form-check-inline">
+  		
+			<input class="form-check-input" type="radio" name="radioSexo" id="otro" value="Otro">
+  			<label class="form-check-label" for="otro">Otro</label>
+
+		</div>
+
+		<br><br>
+
+		<div class="form-row">
+     
+			<div class="form-group col-md-6">
+			
+				<label for="txtEdad">Edad</label>
+    				<input type="text" class="form-control" name="txtEdad" placeholder="Edad">
+  
+			</div>
+
+		</div>
+		
+		<div class="form-row">
+    
+			<div class="form-group col-md-6">
+      
+				<label for="txtEmail">Correo electrónico</label>
+				<input type="email" class="form-control" name="txtEmail" placeholder="Correo electrónico" required>
+    
+			</div>
+
+		</div>
+		
+		<div class="form-row">
+    
+			<div class="form-group col-md-6">
+      
+				<label for="pswClave">Contraseña</label>
+				<input type="password" class="form-control" name="pswClave" placeholder="Contraseña" required>
+    
+			</div>
+	
+		</div>
+
+		<div class="form-group">
+    
+			<div class="form-check">
+      
+				<input class="form-check-input" type="checkbox" id="gridCheck">
+      				<label class="form-check-label" for="gridCheck">Aceptar condiciones</label>
+    
+			</div>
+  
+		</div>
+  
+		<button type="submit" class="btn btn-primary">Registrar</button>
+
+		</form>	
+
+		</div>
+
+		{% block content %}
+		{% if estado %}
+
+			<label> {{ estado }} </label>	
+
+		{% endif %}
+		{% endblock %}
+	</body>
+
+</html>

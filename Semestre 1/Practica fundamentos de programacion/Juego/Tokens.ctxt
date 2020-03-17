@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Tokens()
+comment1.params=g\ matriz
+comment1.target=void\ dibujarTokens(java.awt.Graphics,\ char[][])
+comment2.params=
+comment2.target=int\ getcX()
+comment3.params=
+comment3.target=int\ getcY()
+numComments=4

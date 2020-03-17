@@ -1,0 +1,51 @@
+<html>
+	<head>
+	
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	
+	</head>
+
+	<body>
+
+		<div class="container">
+	
+		<br>
+
+		<form action="/login", method="POST">
+  	
+		<div class="form-row">
+			
+			<div class="form-group col-md-4">
+
+				<label for="txtNumeroDocumento">Número de documento</label>
+				<input type="text" class="form-control" name="txtNumeroDocumento" placeholder="Número de documento" required>
+
+			</div>
+
+			<div class="form-group col-md-4">
+      
+				<label for="pswClave">Contraseña</label>
+				<input type="password" class="form-control" name="pswClave" placeholder="Contraseña" required>
+    
+			</div>
+			
+		</div>
+
+		<button type="submit" class="btn btn-primary">Entrar</button>
+		
+		</form>	
+
+		</div>
+
+	
+		{% block content %}
+		{% if mensaje %}
+
+			<label> {{ mensaje }} </label>	
+
+		{% endif %}
+		{% endblock %}
+
+	</body>
+
+</html>

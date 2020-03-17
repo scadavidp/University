@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.params=corX\ corY
+comment0.target=Avatar(int,\ int)
+comment1.params=g
+comment1.target=void\ dibujarAvatar(java.awt.Graphics)
+comment10.params=g
+comment10.target=void\ perder(java.awt.Graphics)
+comment2.params=
+comment2.target=int\ getX()
+comment3.params=
+comment3.target=int\ getY()
+comment4.params=e
+comment4.target=void\ keyPressed(java.awt.event.KeyEvent)
+comment5.params=e
+comment5.target=void\ keyReleased(java.awt.event.KeyEvent)
+comment6.params=e
+comment6.target=void\ keyTyped(java.awt.event.KeyEvent)
+comment7.params=g
+comment7.target=void\ ganar(java.awt.Graphics)
+comment8.params=
+comment8.target=void\ run()
+comment9.params=
+comment9.target=void\ start()
+numComments=11

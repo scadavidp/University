@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Aviso()
+comment1.params=
+comment1.target=void\ contarPuntaje()
+comment2.params=g
+comment2.target=void\ dibujarGanaste(java.awt.Graphics)
+comment3.params=g
+comment3.target=void\ dibujarPerdiste(java.awt.Graphics)
+comment4.params=g
+comment4.target=void\ dibujarPuntaje(java.awt.Graphics)
+numComments=5

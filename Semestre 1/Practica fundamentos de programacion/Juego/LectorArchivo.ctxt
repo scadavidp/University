@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.params=
+comment0.target=LectorArchivo()
+comment1.params=nombreArchivo
+comment1.target=void\ leerArchivo(java.lang.String)
+comment2.params=
+comment2.target=int\ getX()
+comment3.params=
+comment3.target=int\ getY()
+numComments=4
