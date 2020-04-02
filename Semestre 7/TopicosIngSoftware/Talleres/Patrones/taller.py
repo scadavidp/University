@@ -98,6 +98,10 @@ class Items(metaclass=ABCMeta):
     @abstractstaticmethod
     def guardarItem():
         """se debe almacenar en una BD"""
+    
+    @abstractstaticmethod
+    def getItemInfoDecoded():
+        """Devolver el item pero como un dict"""
 
 
 class Nevera(Items):
@@ -122,6 +126,15 @@ class Nevera(Items):
         i = itemsDB.insert_one(informacion)
         return ("El item: " + self.descripcion + "Ha sido guardado con exito")
         #return json.dumps(informacion)
+    
+    def getItemInfoDecoded(self):
+        informacionDecoded = {
+            'tipo Item' : self.tipoItem,
+            'id' : self.id,
+            'descripcion' : self.descripcion,
+            'valor unidad' : self.valorUnidad
+        }
+        return informacionDecoded
 
 class Computador(Items):
     def __init__(self, descripcion, valorUnidad):
@@ -145,6 +158,15 @@ class Computador(Items):
         return ("El item: " + self.descripcion + "Ha sido guardado con exito")
         #return json.dumps(informacion)
 
+    def getItemInfoDecoded(self):
+        informacionDecoded = {
+            'tipo Item' : self.tipoItem,
+            'id' : self.id,
+            'descripcion' : self.descripcion,
+            'valor unidad' : self.valorUnidad
+        }
+        return informacionDecoded
+
 class Camisa(Items):
     def __init__(self, descripcion, valorUnidad):
         self.tipoItem = "Ropa"
@@ -166,6 +188,14 @@ class Camisa(Items):
         i = itemsDB.insert_one(informacion)
         return ("El item: " + self.descripcion + "Ha sido guardado con exito")
         # return json.dumps(informacion)
+    def getItemInfoDecoded(self):
+        informacionDecoded = {
+            'tipo Item' : self.tipoItem,
+            'id' : self.id,
+            'descripcion' : self.descripcion,
+            'valor unidad' : self.valorUnidad
+        }
+        return informacionDecoded
 
 class ItemFactory():
     @staticmethod
@@ -451,7 +481,7 @@ class App:
             respuesta == 'cerrar'"""
 
 
-class Factura():
+class Factura:
     
     """def __init__(self, nroFactura, fechaFactura, cliente, totalFactura, estado, items):
         self.nroFactura = nroFactura
@@ -462,7 +492,7 @@ class Factura():
         self.items = items
         crearFactura(facturaResumen)"""
 
-    def crearFactura(self):
+    """def crearFactura(self):
         self.facturaResumen['nroFactura'] = self.nroFactura
         self.facturaResumen['fechaFactura'] = self.fechaFactura
         self.facturaResumen['cliente'] = self.cliente
@@ -470,23 +500,36 @@ class Factura():
         self.facturaResumen['estado'] = self.estado
         self.facturaResumen['items'] = self.items
         f=facturasDB.insert_one(self.facturaResumen)
-        return self.facturaResumen
+        return self.facturaResumen"""
+
+    def crearFactura(self):
+        facturaResumen = {
+            'nroFactura': self.nroFactura,
+            'fechaFactura' : self.fechaFactura,
+            'cliente': self.cliente,
+            'total': self.totalFactura,
+            'estado': self.estado,
+            'items' : self.items
+        }
+        f=facturasDB.insert_one(facturaResumen)
+        return facturaResumen
+    
     
     def __init__(self, nroFactura):
         self.nroFactura = nroFactura
         self.fechaFactura = date.today().strftime("%d/%m/%Y")
         self.cliente = {}
-        self.totalFactura = {}
+        self.totalFactura = 0
         self.estado = "Pendiente"
         self.items = []
-        self.facturaResumen = {}
+        #self.facturaResumen = {}
         #crearFactura(facturaResumen)
     
     def setCliente(self, cliente):
         self.cliente = cliente
     
     def addItems(self,item):
-        self.items.append(item)
+        self.items = item
     
     def getItemsFactura(self):
         return self.items
@@ -494,12 +537,20 @@ class Factura():
     def getTotalFactura(self):
         total = self.totalFactura
         for item in self.items:
-            total += float(item.valorUnidad)
+            total += float(item['valor unidad'])
         self.totalFactura = total
         #return total
     
     def getFacturaResumen(self):
-        return self.facturaResumen
+        facturaResumen = {
+            'nroFactura': self.nroFactura,
+            'fechaFactura' : self.fechaFactura,
+            'cliente': self.cliente,
+            'total': self.totalFactura,
+            'estado': self.estado,
+            'items' : self.items
+        }
+        return facturaResumen
 
     clienteFactura = {}
 
@@ -511,6 +562,7 @@ class Factura():
 
 
     def agregarItems(self):
+        listItems = []
         print("desea añadir items a la factura, (ingrese si o no)")
         r=input()
         while(r=="si"):
@@ -519,16 +571,52 @@ class Factura():
                 print(item)
 
             print("Ingrese el id del item que desea añadir a la factura")
-            idItem = input()
+            idItem = int(input())
+            print("Cuantas unidades")
+            unidadesItem = int(input())
+            #for it in itemsDB.find():
+                #if it['id'] == idItem:
+            for i in range(0, unidadesItem):
+                if idItem == 1:
+                    print("Item 1")
+                    listItems.append(newItem1.getItemInfoDecoded())
+                    #self.addItems(newItem1)
+                elif idItem == 2:
+                    print("Item 2")
+                    listItems.append(newItem2.getItemInfoDecoded())
+                    #self.addItems(newItem2)
+                elif idItem == 3:
+                    print("Item 3")
+                    listItems.append(newItem3.getItemInfoDecoded())
+                    #self.addItems(newItem3) 
+            print(listItems)
+            print(self.items)            
+            print("desea añadir mas items a la factura, (ingrese si o no)")
+            r=input()
+            if r=='no':
+                self.items = listItems
+                print(self.items)
+
+
+    """def agregarItems(self):
+        print("desea añadir items a la factura, (ingrese si o no)")
+        r=input()
+        while(r=="si"):
+            print("Ahora añada los items a la factura:")
+            for item in itemsDB.find():
+                print(item)
+
+            print("Ingrese el id del item que desea añadir a la factura")
+            idItem = int(input())
             print("Cuantas unidades")
             unidadesItem = int(input())
             for it in itemsDB.find():
                 if it['id'] == idItem:
-                    for i in range(unidadesItem):
+                    for i in range(0, unidadesItem):
                         self.addItems(it)
             print(self.items)            
             print("desea añadir mas items a la factura, (ingrese si o no)")
-            r=input()
+            r=input()"""
             
         
 
@@ -611,32 +699,32 @@ if __name__ == "__main__":
     #APP
     #Prueba ejecucion programa
     #1 Crear tipos de items Done 
-    """tipoItem = factoryItemType.getTipoItem("Electrodomestico")
+    tipoItem = factoryItemType.getTipoItem("Electrodomestico")
     
     tipoItem = factoryItemType.getTipoItem("Tecnologia")
     
     tipoItem = factoryItemType.getTipoItem("Ropa")
 
 
-    for x in tipoItemsDB.find():
+    """for x in tipoItemsDB.find():
         print(x)"""
 
     #2 Crear items: Done
-    """newItem1 = ItemFactory.getItem("Nevera")
-    newItem1.guardarItem()
+    newItem1 = ItemFactory.getItem("Nevera")
+    #newItem1.guardarItem()
     newItem2 = ItemFactory.getItem("Computador")
-    newItem2.guardarItem()
+    #newItem2.guardarItem()
     newItem3 = ItemFactory.getItem("Camisa")
-    newItem3.guardarItem()
-    for x in itemsDB.find():
+    #newItem3.guardarItem()
+    """for x in itemsDB.find():
         print(x)"""
 
     #3 Crear usuarios: Done
-    """c1 = Cliente(1, "jose", "algo", "hombre", "12345", "soltero")
+    c1 = Cliente(1, "jose", "algo", "hombre", "12345", "soltero")
     c2 = Cliente(2, "alfredo", "algd2", "hombre", "1643", "casado")
     c3 = Cliente(3, "maria", "algo3", "mujer", "12535", "soltera")
 
-    database = ClienteBD()
+    """#database = ClienteBD()
     database.addCliente(c1)
     database.addCliente(c2)
     database.addCliente(c3)
@@ -652,5 +740,7 @@ if __name__ == "__main__":
             #ejecucion del programa
             newfactura = Factura(nro) 
             newfactura.crearNuevaFactura()
+            print("Desea crear una nueva factura, para si ingrese si para no ingrese no, escriba cerrar para cerrar el programa")
+            respuesta = input()
         elif respuesta == "no":
             respuesta = 'cerrar'
