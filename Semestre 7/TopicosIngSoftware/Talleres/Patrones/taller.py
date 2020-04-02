@@ -3,13 +3,14 @@
 from abc import ABCMeta, abstractstaticmethod
 import json
 import pymongo
+from datetime import date
 
 connectionString = "mongodb+srv://scadavidp:asdf1234@cluster0-v8ta5.mongodb.net/test?retryWrites=true&w=majority"
 
 basedb = pymongo.MongoClient(connectionString)
 db = basedb.DBTallerPatrones
 tipoItemsDB = db.TipoItems
-itemsDB = db.Ttems
+itemsDB = db.Items
 clientesDB = db.Clientes
 facturasDB = db.Facturas
 
@@ -98,6 +99,7 @@ class Items(metaclass=ABCMeta):
     def guardarItem():
         """se debe almacenar en una BD"""
 
+
 class Nevera(Items):
     
     def __init__(self, descripcion, valorUnidad):
@@ -117,7 +119,9 @@ class Nevera(Items):
             'descripcion' : self.descripcion,
             'valor unidad' : self.valorUnidad
         }
-        return json.dumps(informacion)
+        i = itemsDB.insert_one(informacion)
+        return ("El item: " + self.descripcion + "Ha sido guardado con exito")
+        #return json.dumps(informacion)
 
 class Computador(Items):
     def __init__(self, descripcion, valorUnidad):
@@ -137,7 +141,9 @@ class Computador(Items):
             'descripcion' : self.descripcion,
             'valor unidad' : self.valorUnidad
         }
-        return json.dumps(informacion)
+        i = itemsDB.insert_one(informacion)
+        return ("El item: " + self.descripcion + "Ha sido guardado con exito")
+        #return json.dumps(informacion)
 
 class Camisa(Items):
     def __init__(self, descripcion, valorUnidad):
@@ -156,8 +162,10 @@ class Camisa(Items):
             'id' : self.id,
             'descripcion' : self.descripcion,
             'valor unidad' : self.valorUnidad
-        }
-        return json.dumps(informacion)
+        } 
+        i = itemsDB.insert_one(informacion)
+        return ("El item: " + self.descripcion + "Ha sido guardado con exito")
+        # return json.dumps(informacion)
 
 class ItemFactory():
     @staticmethod
@@ -306,23 +314,236 @@ class ClienteBD(ClienteDao):
                 newValues = {"$set": c.getDatosCliente()}
                 clientesDB.update_one(cliente, newValues)
         
-    def deleteCliente(self, cliente):
+    def deleteCliente(self, idcliente):
         """for i in range (len(clientes) -1):
             if clientes[i].getId() == cliente:
                 clientes.remove(clientes[i])
                 break"""
         for c in clientesDB.find():
-            if c['id'] == cliente:
+            if c['id'] == idcliente:
                 clientesDB.delete_one(c)
     
     def addCliente(self, cliente):
-        clientes.append(cliente)
-        x=clientesDB.insert_one(cliente.getDatosCliente())
+        if clientesDB.count() != 0:
+            for c in clientesDB.find():
+                if c['id'] == cliente.getId():
+                    raise Exception ("Este cliente ya fue añadido")
+                else:
+                    clientes.append(cliente)
+                    x=clientesDB.insert_one(cliente.getDatosCliente())
+        else:
+            clientes.append(cliente)
+            x=clientesDB.insert_one(cliente.getDatosCliente())
 
-
-    
-    
         
+"""
+class Factura(object):
+    facturaResumen = {}
+    """"""def __init__(self, nroFactura, fechaFactura, cliente, totalFactura, estado, items):
+        self.nroFactura = nroFactura
+        self.fechaFactura = fechaFactura
+        self.cliente = cliente
+        self.totalFactura = totalFactura
+        self.estado = estado
+        self.items = items
+        crearFactura(facturaResumen)""""""
+
+    def crearFactura(self):
+        facturaResumen['nroFactura'] = self.nroFactura
+        facturaResumen['fechaFactura'] = self.fechaFactura
+        facturaResumen['cliente'] = self.cliente.getDatosCliente()
+        facturaResumen['totalFactura'] = self.totalFactura
+        facturaResumen['estado'] = self.estado
+        facturaResumen['items'] = self.items
+        f=facturasDB.insert_one(facturaResumen)
+        return facturaResumen
+    
+    def __init__(self, nroFactura, fechaFactura):
+        self.nroFactura = 0
+        self.fechaFactura = ""
+        self.cliente = {}
+        self.totalFactura = 0
+        self.estado = "Pendiente"
+        self.items = []
+        #crearFactura(facturaResumen)
+    
+    def setCliente(self, cliente):
+        self.cliente = cliente
+    
+    def addItems(self,item):
+        self.items.append(item)
+    
+    def getItemsFactura(self):
+        return self.items
+    
+    def getTotalFactura(self):
+        total = self.totalFactura
+        totalItems = getItemsFactura()
+        for item in totalItems:
+            total += float(item.valorUnidad)
+        self.totalFactura = total
+        #return total
+    
+    def getFacturaResumen(self):
+        return facturaResumen
+"""
+
+
+
+"""        
+class App:
+    
+    clienteFactura = {}
+
+
+    def imprimirFactura(self, factura):
+        factura.getTotalFactura()
+        factura.crearFactura()
+        print(json.dump(factura.getFacturaResumen()))
+
+
+    def agregarItems(self, factura):
+        print("desea añadir items a la factura, (ingrese si o no)")
+        r = input()
+        while(r=="si"):
+            print("Ahora añada los items a la factura:")
+            for item in itemsDB:
+                print(item.getItemsInfo())
+                print("Ingrese el id del item que desea añadir a la factura")
+                idItem = input()
+                print("Cuantas unidades")
+                unidadesItem = input()
+                for it in itemsDB.find_one():
+                    if it['id'] == idItem:
+                        for i in range(unidadesItem):
+                            factura.addItems(it)
+            print("desea añadir mas items a la factura, (ingrese si o no)")
+            r == input()
+        
+                
+
+        
+
+    def crearNuevaFactura(self, factura):
+        print("Cual es el cliente, ingrese el id del cliente")
+        cid = input()
+        for c in clientesDB.find_one():
+            if c['id'] == cid:
+                clienteFactura = c
+                factura.addCliente(clienteFactura)
+                break
+        agregarItems(factura)
+        imprimirFactura(factura)
+        
+
+            
+    nro = 0
+    newFactura = object
+    print("Desea crear una nueva factura, para si ingrese si para no ingrese no, escriba cerrar para cerrar el programa")
+    respuesta = input()
+    while(respuesta != 'cerrar'):
+        nro+=1
+        if respuesta == "si":
+            #ejecucion del programa
+            newfactura = Factura(nro, date.today()) 
+            crearNuevaFactura(newFactura)
+        elif respuesta == "no":
+            respuesta == 'cerrar'"""
+
+
+class Factura():
+    
+    """def __init__(self, nroFactura, fechaFactura, cliente, totalFactura, estado, items):
+        self.nroFactura = nroFactura
+        self.fechaFactura = fechaFactura
+        self.cliente = cliente
+        self.totalFactura = totalFactura
+        self.estado = estado
+        self.items = items
+        crearFactura(facturaResumen)"""
+
+    def crearFactura(self):
+        self.facturaResumen['nroFactura'] = self.nroFactura
+        self.facturaResumen['fechaFactura'] = self.fechaFactura
+        self.facturaResumen['cliente'] = self.cliente
+        self.facturaResumen['totalFactura'] = self.totalFactura
+        self.facturaResumen['estado'] = self.estado
+        self.facturaResumen['items'] = self.items
+        f=facturasDB.insert_one(self.facturaResumen)
+        return self.facturaResumen
+    
+    def __init__(self, nroFactura):
+        self.nroFactura = nroFactura
+        self.fechaFactura = date.today().strftime("%d/%m/%Y")
+        self.cliente = {}
+        self.totalFactura = {}
+        self.estado = "Pendiente"
+        self.items = []
+        self.facturaResumen = {}
+        #crearFactura(facturaResumen)
+    
+    def setCliente(self, cliente):
+        self.cliente = cliente
+    
+    def addItems(self,item):
+        self.items.append(item)
+    
+    def getItemsFactura(self):
+        return self.items
+    
+    def getTotalFactura(self):
+        total = self.totalFactura
+        for item in self.items:
+            total += float(item.valorUnidad)
+        self.totalFactura = total
+        #return total
+    
+    def getFacturaResumen(self):
+        return self.facturaResumen
+
+    clienteFactura = {}
+
+
+    def imprimirFactura(self):
+        self.getTotalFactura()
+        self.crearFactura()
+        print(self.getFacturaResumen())
+
+
+    def agregarItems(self):
+        print("desea añadir items a la factura, (ingrese si o no)")
+        r=input()
+        while(r=="si"):
+            print("Ahora añada los items a la factura:")
+            for item in itemsDB.find():
+                print(item)
+
+            print("Ingrese el id del item que desea añadir a la factura")
+            idItem = input()
+            print("Cuantas unidades")
+            unidadesItem = int(input())
+            for it in itemsDB.find():
+                if it['id'] == idItem:
+                    for i in range(unidadesItem):
+                        self.addItems(it)
+            print(self.items)            
+            print("desea añadir mas items a la factura, (ingrese si o no)")
+            r=input()
+            
+        
+
+    def crearNuevaFactura(self):
+        print("Cual es el cliente, ingrese el id del cliente")
+        cd = input()
+        cid=int(cd)
+        for cliente in clientesDB.find():
+            if cliente['id'] == cid:
+                clienteFactura = cliente
+                self.setCliente(clienteFactura)
+                break
+        self.agregarItems()
+        self.imprimirFactura()
+   
 
 
 
@@ -365,11 +586,11 @@ if __name__ == "__main__":
     print(database.getClientes())"""
 
     #test dao pero con Mongo
-    c1 = Cliente(1, "jose", "algo", "hombre", "12345", "soltero")
+    """c1 = Cliente(1, "jose", "algo", "hombre", "12345", "soltero")
     c2 = Cliente(2, "alfredo", "algd2", "hombre", "1643", "casado")
-    c3 = Cliente(3, "maria", "algo3", "mujer", "12535", "soltera")
-
-    database = ClienteBD()
+    c3 = Cliente(3, "maria", "algo3", "mujer", "12535", "soltera")"""
+                                                                    
+    """database = ClienteBD()
     database.addCliente(c1)
     database.addCliente(c2)
     database.addCliente(c3)
@@ -380,9 +601,56 @@ if __name__ == "__main__":
     database.updateCliente(c2)
     print("Base de datos despues de la actualizacion del cliente" + str(c2.getId()))
     print(database.getClientes())
+"""
+    """database = ClienteBD()
+    database.deleteCliente(c1)
+    database.deleteCliente(c2)
+    database.deleteCliente(c3)
+    print(database.getClientes())"""
+    #----------------------------------------------------------------------------------------
+    #APP
+    #Prueba ejecucion programa
+    #1 Crear tipos de items Done 
+    """tipoItem = factoryItemType.getTipoItem("Electrodomestico")
+    
+    tipoItem = factoryItemType.getTipoItem("Tecnologia")
+    
+    tipoItem = factoryItemType.getTipoItem("Ropa")
 
-    #database = ClienteBD()
-    database.deleteCliente(1)
-    database.deleteCliente(2)
-    database.deleteCliente(3)
-    print(database.getClientes())
+
+    for x in tipoItemsDB.find():
+        print(x)"""
+
+    #2 Crear items: Done
+    """newItem1 = ItemFactory.getItem("Nevera")
+    newItem1.guardarItem()
+    newItem2 = ItemFactory.getItem("Computador")
+    newItem2.guardarItem()
+    newItem3 = ItemFactory.getItem("Camisa")
+    newItem3.guardarItem()
+    for x in itemsDB.find():
+        print(x)"""
+
+    #3 Crear usuarios: Done
+    """c1 = Cliente(1, "jose", "algo", "hombre", "12345", "soltero")
+    c2 = Cliente(2, "alfredo", "algd2", "hombre", "1643", "casado")
+    c3 = Cliente(3, "maria", "algo3", "mujer", "12535", "soltera")
+
+    database = ClienteBD()
+    database.addCliente(c1)
+    database.addCliente(c2)
+    database.addCliente(c3)
+    print(database.getClientes())"""
+
+    #4 Crear Factura
+    nro = 0
+    print("Desea crear una nueva factura, para si ingrese si para no ingrese no, escriba cerrar para cerrar el programa")
+    respuesta = input()
+    while(respuesta != 'cerrar'):
+        nro+=1
+        if respuesta == "si":
+            #ejecucion del programa
+            newfactura = Factura(nro) 
+            newfactura.crearNuevaFactura()
+        elif respuesta == "no":
+            respuesta = 'cerrar'
