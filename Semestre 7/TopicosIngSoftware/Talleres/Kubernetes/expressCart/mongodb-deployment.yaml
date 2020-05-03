@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.19.0 (f63a961c)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongodb
+  name: mongodb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.19.0 (f63a961c)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongodb
+    spec:
+      containers:
+      - args:
+        - mongod
+        - --smallfiles
+        - --logpath=/dev/null
+        image: mongo:3.4.10
+        name: expresscart-mongodb
+        ports:
+        - containerPort: 27017
+        resources: {}
+        volumeMounts:
+        - mountPath: /data/db
+          name: expresscart-mongo-data
+      restartPolicy: Always
+      volumes:
+      - name: expresscart-mongo-data
+        persistentVolumeClaim:
+          claimName: expresscart-mongo-data
+status: {}

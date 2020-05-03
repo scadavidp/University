@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.19.0 (f63a961c)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: expresscart
+  name: expresscart
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.19.0 (f63a961c)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: expresscart
+    spec:
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: development
+        - name: NODE_PATH
+          value: /
+        image: scadavidp/expresscart:v1
+        name: expresscart
+        ports:
+        - containerPort: 1111
+        resources: {}
+      restartPolicy: Always
+status: {}
